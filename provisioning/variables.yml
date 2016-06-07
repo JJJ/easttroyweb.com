@@ -1,0 +1,6 @@
+---
+vm:
+  box: ubuntu/trusty64
+  ip_address: 192.168.55.100
+  hostname: easttroybusiness.local
+  sync_vm: /srv/www/easttroyweb/public

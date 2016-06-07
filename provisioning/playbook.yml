@@ -1,0 +1,50 @@
+---
+- hosts: webservers
+  tasks:
+  - name: Add apt-repository for up-to-date PHP packages
+    apt_repository: repo='ppa:ondrej/php' update_cache=yes
+  - name: Add apt-repository for up-to-date NGINX packages
+    apt_repository: repo='ppa:nginx/development' update_cache=yes
+
+  - name: Install LEMP stack
+    apt: pkg={{ item }} state=present update_cache=yes
+    with_items:
+        - nginx
+        - php
+        - php-common
+        - php-tidy
+        - php-mcrypt
+        - php-mysql
+        - php-curl
+        - php-cli
+        - php-memcached
+        - git
+        - mysql-server
+        - curl
+        - python-mysqldb # required for mysql commands below
+
+  - name: Create a WordPress database - You will need to copy over your schema
+    mysql_db: name=wordpress state=present
+    notify:
+      - restart mysql
+
+  - name: Update the nginx config to point to our wordpress install
+    action: file src=nginx.conf dest=/etc/nginx/nginx.conf
+    notify: Restart nginx
+
+#  - name: copy sql file
+#    copy: src=../data/current-backup.sql dest=/tmp
+#  - name: update kbpattern database
+#    mysql_db: name=kb-pattern state=import target=/tmp/current-backup.sql
+#  - name: Create Application DB User
+#  mysql_user: name=kbpattern password=kbpattern priv=*.*:ALL host='%' state=present
+
+# copy config file over to www path
+#  - name: Copying configuration file over from source
+#    shell: cp /var/www/model/config.php.example /var/www/model/config.php
+
+### Handlers ###
+  - name: restart nginx
+    service: name=nginx state=restarted enabled=yes
+  - name: restart mysql
+    service: name=mysql state=restarted enabled=yes
