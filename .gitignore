@@ -8,3 +8,6 @@ import.xml
 /content/uploads/
 /content/blogs.dir/
 /content/plugins/hello.php
+/provisioning/playbook.yml
+/.vagrant
+/.idea
